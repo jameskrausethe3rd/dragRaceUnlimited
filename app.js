@@ -1,3 +1,10 @@
+const roadData = {
+    minX: 3,
+    maxX: 19,
+    minY: 9,
+    maxY: 13
+}
+
 function randomFromArray(array){
    return array[Math.floor(Math.random() * array.length)]; 
 }
@@ -7,6 +14,14 @@ function createName() {
     const animal = randomFromArray(["BEAR", "CAT", "DOG", "PANGOLIN", "PANDA", "GIRAFFE"]);
 
     return `${prefix} ${animal}`;
+}
+
+function inBounds(x, y){
+    return (
+    x > roadData.maxX || 
+    x < roadData.minX ||
+    y > roadData.maxY ||
+    y < roadData.minY)
 }
 
 function setScale() {
@@ -37,7 +52,7 @@ function centerName() {
     function handleArrowPress(xChange, yChange) {
         const newX = players[playerId].x + xChange;
         const newY = players[playerId].y + yChange;
-        if (true) {
+        if (!inBounds(newX, newY)) {
             //move to the next space
             players[playerId].x = newX;
             players[playerId].y = newY;
@@ -113,7 +128,7 @@ function centerName() {
             playerRef.set({
                 id: playerId,
                 name,
-                x: Math.random() * (19 - 5) + 5,
+                x: Math.floor(Math.random() * (19 - 5) + 5),
                 y: randomFromArray([9, 11, 13]),
                 online: true
             })
