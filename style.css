@@ -17,15 +17,36 @@ html, body {
     margin: 10px;
     width: 400px;
     height: 240px;
-    background: url(images/map.png) no-repeat no-repeat;
+    /* background: url(images/map.png) repeat-x;
+    image-rendering: pixelated; */
+    overflow: hidden;
+}
+.game-container-road {
+    position: absolute;
+    bottom: 0px;
+    width: 800px;
+    height: 89px;
+    background: url(images/road.png) repeat-x;
     image-rendering: pixelated;
+    animation: slide 3s linear infinite;
+    z-index: -1;
+}
+.game-container-road-background {
+    position: absolute;
+    bottom: 0px;
+    width: 800px;
+    height: 240px;
+    background: url(images/road-background.png) repeat-x;
+    image-rendering: pixelated;
+    animation: slide 15s linear infinite;
+    z-index: -1;
 }
 .game-container-border {
     position: relative;
     width: 420px;
     height: 260px;
-    transform: scale(3);
-    background: url(images/border.png) no-repeat no-repeat;
+    background: url(images/border.png);
+    overflow: hidden;
 }
 
 /* Character */
@@ -54,7 +75,6 @@ html, body {
 }
 .Character_car {
     transform: scale(.5);
-    overflow: hidden;
     top: -15px;
     left: -100px;
     background: url(images/car.png);
@@ -62,7 +82,6 @@ html, body {
 .Character_name-container {
     position: absolute;
     top: -12px;
-    left: -5px;
     font-size: 5px;
     padding: 1px 2px 1px;
     border-radius: 3px;
@@ -72,3 +91,12 @@ html, body {
     text-transform: uppercase;
     white-space: nowrap;
 }
+
+@keyframes slide {
+    0% {
+      transform: translate(0);
+    }
+    100% {
+      transform: translate(-400px); /* The image width */
+    }
+  }

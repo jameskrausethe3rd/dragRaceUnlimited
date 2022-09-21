@@ -9,19 +9,64 @@ function createName() {
     return `${prefix} ${animal}`;
 }
 
+function setScale() {
+    const gameContainerBorder = document.querySelector(".game-container-border");
+    const windowWidth = window.innerWidth * .55;
+    gameContainerBorder.style.transform = `scale(${windowWidth/420})`;
+}
+
+function centerName() {
+    var middle = document.querySelector(".Character_name-container").clientWidth / 2;
+    console.log(middle);
+    middle = 18 - middle;
+    console.log(middle);
+    return `${middle}px`;
+}
+
 (function () {
+
+    window.addEventListener("resize", setScale);
+    setScale();
 
     let playerId;
     let playerRef;
-    let playerElemenets = {}
+    let playerElements = {}
 
     const gameContainer = document.querySelector(".game-container");
 
+    function handleArrowPress(xChange, yChange) {
+        const newX = players[playerId].x + xChange;
+        const newY = players[playerId].y + yChange;
+        if (true) {
+            //move to the next space
+            players[playerId].x = newX;
+            players[playerId].y = newY;
+            playerRef.set(players[playerId]);
+        }
+    }
+
     function initGame() {
+
+        new KeyPressListener("ArrowUp", () => handleArrowPress(0, -2))
+        new KeyPressListener("ArrowDown", () => handleArrowPress(0, 2))
+        new KeyPressListener("ArrowLeft", () => handleArrowPress(-2, 0))
+        new KeyPressListener("ArrowRight", () => handleArrowPress(2, 0))
+
         const allPlayersRef = firebase.database().ref(`players`);
 
         allPlayersRef.on("value", (snapshot) =>{
             //Fires whenever a change occurs
+            players = snapshot.val() || {};
+            Object.keys(players).forEach((key) => {
+                const characterState = players[key];
+                let el = playerElements[key];
+
+                el.querySelector(".Character_name").innerText = characterState.name;
+                el.querySelector(".Character_name-container").style.left = centerName();
+                const left = 16 * characterState.x + "px";
+                const top = 16 * characterState.y - 4 + "px";
+                el.style.transform = `translate3d(${left}, ${top}, 0)`;
+            })
         })
         allPlayersRef.on("child_added", (snapshot) =>{
             //Fires whenever a new node is added to the tree
@@ -38,21 +83,21 @@ function createName() {
             </div>
             <div class="Character_you-arrow"></div>
             `);
-            playerElemenets[addedPlayer.id] = characterElement;
+            playerElements[addedPlayer.id] = characterElement;
 
             //Fill in initial state
             characterElement.querySelector(".Character_name").innerText = addedPlayer.name;
             const left = 16 * addedPlayer.x + "px";
             const top = 16 * addedPlayer.y - 4 + "px";
             characterElement.style.transform = `translate3d(${left}, ${top}, 0)`;
-            gameContainer.appendChild(characterElement);
+            gameContainer.prepend(characterElement);
         })
 
         //Remove character from DOM when they leave
         allPlayersRef.on("child_removed", (snapshot) => {
             const removedKey = snapshot.val().id;
-            gameContainer.removeChild(playerElemenets[removedKey]);
-            delete playerElemenets[removedKey];
+            gameContainer.removeChild(playerElements[removedKey]);
+            delete playerElements[removedKey];
         })
     }
 
