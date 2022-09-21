@@ -1,6 +1,6 @@
 const roadData = {
-    minX: 3,
-    maxX: 19,
+    minX: 0,
+    maxX: 22,
     minY: 9,
     maxY: 13
 }
@@ -31,11 +31,7 @@ function setScale() {
 }
 
 function centerName() {
-    var middle = document.querySelector(".Character_name-container").clientWidth / 2;
-    console.log(middle);
-    middle = 18 - middle;
-    console.log(middle);
-    return `${middle}px`;
+    return `${18 - document.querySelector(".Character_name-container").clientWidth / 2}px`;
 }
 
 (function () {
