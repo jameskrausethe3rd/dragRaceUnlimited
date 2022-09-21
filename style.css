@@ -17,7 +17,7 @@ html, body {
     margin: 10px;
     width: 400px;
     height: 240px;
-    background: url(/images/map.png) no-repeat no-repeat;
+    background: url(images/map.png) no-repeat no-repeat;
     image-rendering: pixelated;
 }
 .game-container-border {
@@ -25,7 +25,7 @@ html, body {
     width: 420px;
     height: 260px;
     transform: scale(3);
-    background: url(/images/border.png) no-repeat no-repeat;
+    background: url(images/border.png) no-repeat no-repeat;
 }
 
 /* Character */
@@ -50,14 +50,14 @@ html, body {
     left: 15px;
     width: 7px;
     height: 5px;
-    background: url(/images/arrow.png) no-repeat no-repeat;
+    background: url(images/arrow.png) no-repeat no-repeat;
 }
 .Character_car {
     transform: scale(.5);
     overflow: hidden;
     top: -15px;
     left: -100px;
-    background: url(/images/car.png);
+    background: url(images/car.png);
 }
 .Character_name-container {
     position: absolute;
