@@ -1,0 +1,74 @@
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: linear-gradient(180deg, #64BEFF -75%, #6E96FF 69%, #2A65FF 150%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.game-container {
+    position: relative;
+    margin: 10px;
+    width: 400px;
+    height: 240px;
+    background: url(/images/map.png) no-repeat no-repeat;
+    image-rendering: pixelated;
+}
+.game-container-border {
+    position: relative;
+    width: 420px;
+    height: 260px;
+    transform: scale(3);
+    background: url(/images/border.png) no-repeat no-repeat;
+}
+
+/* Character */
+.grid-cell{
+    position: absolute;
+    width: 240px;
+    height: 64px;
+}
+.Character {
+    transition: transform 0.4s;
+}
+.Character.you{
+    z-index: 1;
+}
+.Character.you .Character_you-arrow {
+    display: block
+}
+.Character_you-arrow {
+    display: none;
+    position: absolute;
+    top: -18px;
+    left: 15px;
+    width: 7px;
+    height: 5px;
+    background: url(/images/arrow.png) no-repeat no-repeat;
+}
+.Character_car {
+    transform: scale(.5);
+    overflow: hidden;
+    top: -15px;
+    left: -100px;
+    background: url(/images/car.png);
+}
+.Character_name-container {
+    position: absolute;
+    top: -12px;
+    left: -5px;
+    font-size: 5px;
+    padding: 1px 2px 1px;
+    border-radius: 3px;
+    background: #333;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    white-space: nowrap;
+}

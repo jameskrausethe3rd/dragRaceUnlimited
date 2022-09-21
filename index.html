@@ -1,1 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Drag Race Unlimited</title>
+        <link rel="stylesheet" href="/style.css">
+    </head>
+    <body>
+        <div class="game-container-border">
+            <div class="game-container">
+            </div>
+        </div>
 
+        <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+        <script>
+            const firebaseConfig = {
+            apiKey: "AIzaSyCAObX_sD4srfQeh7cj6jg6TKJyeUfSSbE",
+            authDomain: "dragrace-a65ce.firebaseapp.com",
+            databaseURL: "https://dragrace-a65ce-default-rtdb.firebaseio.com",
+            projectId: "dragrace-a65ce",
+            storageBucket: "dragrace-a65ce.appspot.com",
+            messagingSenderId: "771664530205",
+            appId: "1:771664530205:web:93ddab9b35cbd921e52ff4"
+            };
+            firebase.initializeApp(firebaseConfig);
+
+            const auth = firebase.auth();
+        </script>    
+    
+        <script src="/app.js"></script>
+    </body>
+</html>
