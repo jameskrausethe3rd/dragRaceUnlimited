@@ -2,6 +2,10 @@
     box-sizing: border-box;
 }
 
+@font-face { 
+    font-family: pixelatedText; src: url("fonts/slkscr.ttf");
+}
+
 html, body {
     margin: 0;
     padding: 0;
@@ -11,14 +15,50 @@ html, body {
     align-items: center;
     justify-content: center;
 }
-
+.playerNames-container{
+    position: absolute;
+    font-family: pixelatedText;
+    width: 150px;
+    height: 260px;
+    left: -160px;
+    overflow: hidden;   
+    border: solid white 2px;
+    background-color: black;
+    padding: 0;
+    margin: 0;
+}
+.playerList-title {
+    color: white;
+    padding-left: 5px;
+    padding-top: 3px;
+    margin: 0;
+    display: inline-block; 
+}
+.playerInfo {
+    height: 12px;
+    line-height: 12px;
+    padding: 0 0 0 5px; 
+}
+.playerInfo > span {
+    color: white; 
+    font-size: 10px;
+    display: inline-block; 
+    vertical-align: middle;
+    line-height: normal;
+    margin: 0;
+}
+.playerInfo > span:nth-child(2){
+    padding-bottom: 2px;
+    left: 100px;
+}
+.playerInfo.you > span:nth-child(1) {
+    color: orange;
+}
 .game-container {
     position: relative;
     margin: 10px;
     width: 400px;
     height: 240px;
-    /* background: url(images/map.png) repeat-x;
-    image-rendering: pixelated; */
     overflow: hidden;
 }
 .game-container-road {
@@ -46,7 +86,7 @@ html, body {
     width: 420px;
     height: 260px;
     background: url(images/border.png);
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 
 /* Character */
@@ -83,11 +123,11 @@ html, body {
     position: absolute;
     top: -12px;
     font-size: 5px;
-    padding: 1px 2px 1px;
+    padding: 1px 2px 2px;
     border-radius: 3px;
     background: #333;
     color: white;
-    font-weight: bold;
+    font-family: pixelatedText;
     text-transform: uppercase;
     white-space: nowrap;
 }

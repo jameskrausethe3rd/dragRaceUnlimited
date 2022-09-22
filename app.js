@@ -44,6 +44,7 @@ function centerName() {
     let playerElements = {}
 
     const gameContainer = document.querySelector(".game-container");
+    const playerNamesContainer = document.querySelector(".playerNames-container");
 
     function handleArrowPress(xChange, yChange) {
         const newX = players[playerId].x + xChange;
@@ -70,7 +71,7 @@ function centerName() {
             players = snapshot.val() || {};
             Object.keys(players).forEach((key) => {
                 const characterState = players[key];
-                let el = playerElements[key];
+                let el = playerElements[key].charElement;
 
                 el.querySelector(".Character_name").innerText = characterState.name;
                 el.querySelector(".Character_name-container").style.left = centerName();
@@ -94,7 +95,19 @@ function centerName() {
             </div>
             <div class="Character_you-arrow"></div>
             `);
-            playerElements[addedPlayer.id] = characterElement;
+
+            const playerListElement = document.createElement("div");
+            playerListElement.classList.add("playerInfo");
+            if(addedPlayer.id == playerId){
+                playerListElement.classList.add("you");
+            }
+            playerListElement.innerHTML = (`
+            <span>${addedPlayer.name}</span>
+            <span>■</span>
+            `);
+
+            playerElements[addedPlayer.id] = {playerList: playerListElement, charElement: characterElement};
+            //playerElements[addedPlayer.id] = characterElement;
 
             //Fill in initial state
             characterElement.querySelector(".Character_name").innerText = addedPlayer.name;
@@ -102,12 +115,14 @@ function centerName() {
             const top = 16 * addedPlayer.y - 4 + "px";
             characterElement.style.transform = `translate3d(${left}, ${top}, 0)`;
             gameContainer.prepend(characterElement);
+            playerNamesContainer.appendChild(playerListElement);
         })
 
         //Remove character from DOM when they leave
         allPlayersRef.on("child_removed", (snapshot) => {
             const removedKey = snapshot.val().id;
-            gameContainer.removeChild(playerElements[removedKey]);
+            gameContainer.removeChild(playerElements[removedKey].charElement);
+            playerNamesContainer.removeChild(playerElements[removedKey].playerList);
             delete playerElements[removedKey];
         })
     }
