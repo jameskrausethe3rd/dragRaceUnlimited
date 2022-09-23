@@ -27,6 +27,35 @@ html, body {
     padding: 0;
     margin: 0;
 }
+.chat-container{
+    position: absolute;
+    font-family: pixelatedText;
+    width: 150px;
+    height: 260px;
+    right: -160px;
+    border: solid white 2px;
+    font-size: 10px;
+    color: white;
+    background-color: black;
+    overflow-y: auto;
+    padding: 0;
+    margin: 0;
+}
+.chat-messages > span {
+    display: block;
+    padding-left: 2px;
+}
+.chat-title {
+    height: 19px;
+}
+.chat-title > span {
+    position: fixed; 
+    background-color: black; 
+    padding: 2px; 
+    border-bottom: 2px solid white; 
+    width: 146px; 
+    height: 19px;
+}
 .playerList-title {
     color: white;
     padding-left: 5px;
@@ -34,12 +63,46 @@ html, body {
     margin: 0;
     display: inline-block; 
 }
+.send-message {
+    left: -2px;
+    height: 20px;
+}
+.send-message > input {
+    font-family: pixelatedText; 
+    font-size: 10px; 
+    position: fixed; 
+    background-color: black; 
+    padding: 2px;   
+    bottom: 0px; 
+    height: 20px; 
+    color: white;  
+}
+.send-message > input:focus { 
+    outline: none; 
+}
+.send-message > input:nth-child(1) {
+    border-color: white; 
+    border-left-style: none; 
+    border-right-style: solid; 
+    border-bottom-style: solid; 
+    border-top-style: solid;
+    width: 148px; 
+}
+.send-message > input:nth-child(2) {
+    right: -160px;
+    border-color: white; 
+    border-style: solid;
+    width: 50px; 
+}
+.send-message > input:nth-child(2):hover {
+    cursor: pointer;
+}
 .playerInfo {
     height: 12px;
     line-height: 12px;
     padding: 0 0 0 5px; 
 }
-.playerInfo > span {
+.playerInfo > span, .changeName-container > span{
     color: white; 
     font-size: 10px;
     display: inline-block; 
@@ -118,11 +181,12 @@ html, body {
     top: -15px;
     left: -100px;
     background: url(images/car.png);
+    filter: hue-rotate(60deg);
 }
 .Character_name-container {
     position: absolute;
     top: -12px;
-    font-size: 5px;
+    font-size: 6px;
     padding: 1px 2px 2px;
     border-radius: 3px;
     background: #333;
@@ -130,6 +194,13 @@ html, body {
     font-family: pixelatedText;
     text-transform: uppercase;
     white-space: nowrap;
+}
+.offline {
+    color: white !important;
+}
+
+.online {
+    color: green !important;
 }
 
 @keyframes slide {

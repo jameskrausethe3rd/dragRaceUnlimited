@@ -31,7 +31,7 @@ function setScale() {
 }
 
 function centerName() {
-    return `${18 - document.querySelector(".Character_name-container").clientWidth / 2}px`;
+    return `${19 - document.querySelector(".Character_name-container").clientWidth / 2}px`;
 }
 
 (function () {
@@ -39,12 +39,27 @@ function centerName() {
     window.addEventListener("resize", setScale);
     setScale();
 
+    let sendMessageButton = document.querySelector(".send-message > input:nth-child(2)");
+    sendMessageButton.addEventListener("click", sendMessage);
+
     let playerId;
     let playerRef;
+    let chatRef;
     let playerElements = {}
 
     const gameContainer = document.querySelector(".game-container");
     const playerNamesContainer = document.querySelector(".playerNames-container");
+    const chatContainer = document.querySelector(".chat-container")
+    const chatMessages = document.querySelector(".chat-messages")
+
+    function sendMessage() {
+        const message = chatContainer.querySelector(".send-message > input:nth-child(1)").value;
+        chatRef.push({
+            time: String(Date.now()),
+            message,
+            id: playerId,
+        })   
+    }
 
     function handleArrowPress(xChange, yChange) {
         const newX = players[playerId].x + xChange;
@@ -65,15 +80,47 @@ function centerName() {
         new KeyPressListener("ArrowRight", () => handleArrowPress(2, 0))
 
         const allPlayersRef = firebase.database().ref(`players`);
+        const allChatRef = firebase.database().ref('chatMessages');
+
+        allChatRef.on("value", (snapshot) => {
+            console.log("HI")
+            while (chatMessages.firstChild) {
+                console.log("HI")
+                chatMessages.removeChild(chatMessages.firstChild);
+            }
+            //Fires when a chat is sent
+            players = snapshot.val() || {};
+            for (const sender of Object.values(players)) {
+                for (const element of Object.values(sender)){
+                    const chatMessage = element.message;
+                    const messageSpan = document.createElement('span');
+                    messageSpan.innerHTML = chatMessage;
+                    chatMessages.append(messageSpan);
+                }
+            }
+        })
 
         allPlayersRef.on("value", (snapshot) =>{
             //Fires whenever a change occurs
+
             players = snapshot.val() || {};
             Object.keys(players).forEach((key) => {
                 const characterState = players[key];
                 let el = playerElements[key].charElement;
+                let listEl = playerElements[key].playerList;
 
                 el.querySelector(".Character_name").innerText = characterState.name;
+                listEl.querySelector(".playerInfo > span").innerText = characterState.name;
+
+                var playerOnlineStatus;
+                if (characterState.online == true){
+                    playerOnlineStatus = 'online';
+                } else {
+                    playerOnlineStatus = 'offline';
+                    gameContainer.removeChild(playerElements[key].charElement);
+                }
+                listEl.querySelector(".playerInfo > span:nth-child(2)").setAttribute("class", "");
+                listEl.querySelector(".playerInfo > span:nth-child(2)").classList.add(playerOnlineStatus);
                 el.querySelector(".Character_name-container").style.left = centerName();
                 const left = 16 * characterState.x + "px";
                 const top = 16 * characterState.y - 4 + "px";
@@ -101,13 +148,16 @@ function centerName() {
             if(addedPlayer.id == playerId){
                 playerListElement.classList.add("you");
             }
+            var playerOnlineStatus = 'offline';
+            if(addedPlayer.online == true){
+                playerOnlineStatus = 'online';
+            }
             playerListElement.innerHTML = (`
             <span>${addedPlayer.name}</span>
             <span>■</span>
             `);
 
             playerElements[addedPlayer.id] = {playerList: playerListElement, charElement: characterElement};
-            //playerElements[addedPlayer.id] = characterElement;
 
             //Fill in initial state
             characterElement.querySelector(".Character_name").innerText = addedPlayer.name;
@@ -133,6 +183,7 @@ function centerName() {
             //You're logged in!
             playerId = user.uid;
             playerRef = firebase.database().ref(`players/${playerId}`);
+            chatRef = firebase.database().ref(`chatMessages/${playerId}`);
 
             const name = createName();
 
@@ -144,12 +195,14 @@ function centerName() {
                 online: true
             })
 
-            playerRef.onDisconnect().remove();
-
-            //PRESENCE DETECTION: DISABLED DURING TESTING
-            // playerRef.onDisconnect().update({
-            //     online: false
-            // })
+            //PRESENCE DETECTION
+            if (user.isAnonymous){
+                playerRef.onDisconnect().remove();
+            } else{
+                playerRef.onDisconnect().update({
+                    online: false
+                })
+            }
 
             //Begin game since they're logged in
             initGame();
