@@ -2,10 +2,6 @@
     box-sizing: border-box;
 }
 
-@font-face { 
-    font-family: pixelatedText; src: url("fonts/slkscr.ttf");
-}
-
 html, body {
     margin: 0;
     padding: 0;
@@ -29,6 +25,7 @@ html, body {
 }
 .chat-container{
     position: absolute;
+    animation: fadeIn 1s;
     font-family: pixelatedText;
     width: 150px;
     height: 260px;
@@ -42,8 +39,12 @@ html, body {
     margin: 0;
 }
 .chat-messages > span {
+    font-size: 7px;
     display: block;
     padding-left: 2px;
+}
+.chat-messages > span:nth-child(2n) {
+    color: grey;
 }
 .chat-title {
     height: 19px;
@@ -56,13 +57,6 @@ html, body {
     width: 146px; 
     height: 19px;
 }
-.playerList-title {
-    color: white;
-    padding-left: 5px;
-    padding-top: 3px;
-    margin: 0;
-    display: inline-block; 
-}
 .send-message {
     left: -2px;
     height: 20px;
@@ -72,7 +66,7 @@ html, body {
     font-size: 10px; 
     position: fixed; 
     background-color: black; 
-    padding: 2px;   
+    padding: 0px 2px 2px 0px;   
     bottom: 0px; 
     height: 20px; 
     color: white;  
@@ -86,7 +80,8 @@ html, body {
     border-right-style: solid; 
     border-bottom-style: solid; 
     border-top-style: solid;
-    width: 148px; 
+    overflow: scroll;
+    width: 100px; 
 }
 .send-message > input:nth-child(2) {
     right: -160px;
@@ -97,12 +92,20 @@ html, body {
 .send-message > input:nth-child(2):hover {
     cursor: pointer;
 }
+.playerList-title {
+    color: white;
+    padding-left: 5px;
+    padding-top: 3px;
+    margin: 0;
+    display: inline-block; 
+}
 .playerInfo {
     height: 12px;
     line-height: 12px;
     padding: 0 0 0 5px; 
 }
 .playerInfo > span, .changeName-container > span{
+    animation: fadeIn 1s;
     color: white; 
     font-size: 10px;
     display: inline-block; 
@@ -159,6 +162,7 @@ html, body {
     height: 64px;
 }
 .Character {
+    animation: fadeIn 1s;
     transition: transform 0.4s;
 }
 .Character.you{
@@ -210,4 +214,11 @@ html, body {
     100% {
       transform: translate(-400px); /* The image width */
     }
-  }
+}
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+@font-face { 
+    font-family: pixelatedText; src: url("fonts/slkscr.ttf");
+}

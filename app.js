@@ -30,8 +30,12 @@ function setScale() {
     gameContainerBorder.style.transform = `scale(${windowWidth/420})`;
 }
 
-function centerName() {
-    return `${19 - document.querySelector(".Character_name-container").clientWidth / 2}px`;
+function centerName(gamePlayerName) {
+    return `${18 - (gamePlayerName.clientWidth / 2)}px`;
+}
+
+function getCurrentTimeAsString(){
+    return (new Date().toLocaleTimeString().replace(/(0[\d]+:[\d]{2})(:[\d]{2})(.*)/, "$1$3"));
 }
 
 (function () {
@@ -55,12 +59,14 @@ function centerName() {
     function sendMessage() {
         const messageBox = chatContainer.querySelector(".send-message > input:nth-child(1)");
         const message = messageBox.value;
-        messageBox.value = "";
-        chatRef.push({
-            time: String(Date.now()),
-            message,
-            id: playerId,
-        })   
+        if (message) {
+            messageBox.value = "";
+            chatRef.push({
+                time: getCurrentTimeAsString(),
+                message,
+                id: playerId,
+            })   
+        }
     }
 
     function handleArrowPress(xChange, yChange) {
@@ -76,41 +82,43 @@ function centerName() {
 
     function initGame() {
 
-        new KeyPressListener("ArrowUp", () => handleArrowPress(0, -2))
-        new KeyPressListener("ArrowDown", () => handleArrowPress(0, 2))
-        new KeyPressListener("ArrowLeft", () => handleArrowPress(-2, 0))
-        new KeyPressListener("ArrowRight", () => handleArrowPress(2, 0))
+        new KeyPressListener("ArrowUp", () => handleArrowPress(0, -2));
+        new KeyPressListener("ArrowDown", () => handleArrowPress(0, 2));
+        new KeyPressListener("ArrowLeft", () => handleArrowPress(-2, 0));
+        new KeyPressListener("ArrowRight", () => handleArrowPress(2, 0));
 
         const allPlayersRef = firebase.database().ref(`players`);
-        const allChatRef = firebase.database().ref('chatMessages');
+        const allChatRef = firebase.database().ref('chatMessages').orderByChild('time');
 
-        function drawMessages(players) {
+        async function drawMessages(players) {
 
             //Removes all DOM elements in the chat so they aren't duplicated
             while (chatMessages.firstChild) {
                 chatMessages.removeChild(chatMessages.firstChild);
             }
-
-            //For loop through each of the player objects in the chatMessages
-            for (const sender of Object.values(players)) {
-
-                //For loop through each element of the player (multiple messages)
-                for (const element of Object.values(sender)){
-
+            const playerArray = Object.values(players)
+            for await (const sender of playerArray) {
                     //Gets the name from the allPlayersRef, so the name can be added to the message
-                    allPlayersRef.child(element.id).get().then((snapshot) => {
+                    await allPlayersRef.child(sender.id).get().then((snapshot) => { //Maybe put async here if they come out of order?
 
                         //HTML setup and appending
-                        const playerName = snapshot.val().name || "UNDEFINED";
-                        const chatMessage = element.message;
+                        var playerName;
+                        if (snapshot.val()?.name){
+                            playerName = snapshot.val().name;
+                        } else{
+                            playerName = "User Disconnected";
+                        }
+                        const chatTimestamp = sender.time;
+                        const chatMessage = sender.message;
                         const playerNameSpan = document.createElement('span');
                         const messageSpan = document.createElement('span');
+                        messageSpan.classList.add("messageBody");
                         messageSpan.innerHTML = chatMessage;
-                        playerNameSpan.innerHTML = `${playerName}:`;
+                        playerNameSpan.innerHTML = `${playerName} (${chatTimestamp}):`;
                         chatMessages.append(playerNameSpan);
                         chatMessages.append(messageSpan);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
                     })
-                }
             }
         }
 
@@ -121,12 +129,6 @@ function centerName() {
 
         allPlayersRef.on("value", (snapshot) =>{
             //Fires whenever a change occurs
-
-            //Updates sender same if name gets changed
-            allChatRef.get().then((snapshot) => {
-                drawMessages(snapshot.val() || {});
-            })
-
             players = snapshot.val() || {};
             Object.keys(players).forEach((key) => {
                 const characterState = players[key];
@@ -145,7 +147,8 @@ function centerName() {
                 }
                 listEl.querySelector(".playerInfo > span:nth-child(2)").setAttribute("class", "");
                 listEl.querySelector(".playerInfo > span:nth-child(2)").classList.add(playerOnlineStatus);
-                el.querySelector(".Character_name-container").style.left = centerName();
+                const gamePlayerName = el.querySelector(".Character_name-container")
+                gamePlayerName.style.left = centerName(gamePlayerName);
                 const left = 16 * characterState.x + "px";
                 const top = 16 * characterState.y - 4 + "px";
                 el.style.transform = `translate3d(${left}, ${top}, 0)`;
@@ -207,7 +210,7 @@ function centerName() {
             //You're logged in!
             playerId = user.uid;
             playerRef = firebase.database().ref(`players/${playerId}`);
-            chatRef = firebase.database().ref(`chatMessages/${playerId}`);
+            chatRef = firebase.database().ref(`chatMessages`);
 
             const name = createName();
 
