@@ -53,7 +53,9 @@ function centerName() {
     const chatMessages = document.querySelector(".chat-messages")
 
     function sendMessage() {
-        const message = chatContainer.querySelector(".send-message > input:nth-child(1)").value;
+        const messageBox = chatContainer.querySelector(".send-message > input:nth-child(1)");
+        const message = messageBox.value;
+        messageBox.value = "";
         chatRef.push({
             time: String(Date.now()),
             message,
@@ -82,26 +84,48 @@ function centerName() {
         const allPlayersRef = firebase.database().ref(`players`);
         const allChatRef = firebase.database().ref('chatMessages');
 
-        allChatRef.on("value", (snapshot) => {
-            console.log("HI")
+        function drawMessages(players) {
+
+            //Removes all DOM elements in the chat so they aren't duplicated
             while (chatMessages.firstChild) {
-                console.log("HI")
                 chatMessages.removeChild(chatMessages.firstChild);
             }
-            //Fires when a chat is sent
-            players = snapshot.val() || {};
+
+            //For loop through each of the player objects in the chatMessages
             for (const sender of Object.values(players)) {
+
+                //For loop through each element of the player (multiple messages)
                 for (const element of Object.values(sender)){
-                    const chatMessage = element.message;
-                    const messageSpan = document.createElement('span');
-                    messageSpan.innerHTML = chatMessage;
-                    chatMessages.append(messageSpan);
+
+                    //Gets the name from the allPlayersRef, so the name can be added to the message
+                    allPlayersRef.child(element.id).get().then((snapshot) => {
+
+                        //HTML setup and appending
+                        const playerName = snapshot.val().name || "UNDEFINED";
+                        const chatMessage = element.message;
+                        const playerNameSpan = document.createElement('span');
+                        const messageSpan = document.createElement('span');
+                        messageSpan.innerHTML = chatMessage;
+                        playerNameSpan.innerHTML = `${playerName}:`;
+                        chatMessages.append(playerNameSpan);
+                        chatMessages.append(messageSpan);
+                    })
                 }
             }
+        }
+
+        allChatRef.on("value", (snapshot) => {
+            //Fires when a chat is sent
+            drawMessages(snapshot.val() || {});
         })
 
         allPlayersRef.on("value", (snapshot) =>{
             //Fires whenever a change occurs
+
+            //Updates sender same if name gets changed
+            allChatRef.get().then((snapshot) => {
+                drawMessages(snapshot.val() || {});
+            })
 
             players = snapshot.val() || {};
             Object.keys(players).forEach((key) => {
