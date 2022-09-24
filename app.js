@@ -46,15 +46,26 @@ function getCurrentTimeAsString(){
     let sendMessageButton = document.querySelector(".send-message > input:nth-child(2)");
     sendMessageButton.addEventListener("click", sendMessage);
 
+    let playerSettingsCloseButton = document.querySelector(".player-settings-popup-x");
+    playerSettingsCloseButton.addEventListener("click", closePlayerSettings);
+
     let playerId;
     let playerRef;
     let chatRef;
+    let playerName;
     let playerElements = {}
 
     const gameContainer = document.querySelector(".game-container");
     const playerNamesContainer = document.querySelector(".playerNames-container");
     const chatContainer = document.querySelector(".chat-container")
     const chatMessages = document.querySelector(".chat-messages")
+
+
+    function closePlayerSettings() {
+        const settingsBox = document.querySelector(".player-settings-popup");
+        settingsBox.classList.remove('scaleInAnimation');  
+        settingsBox.classList.add('hidden');
+    }
 
     function sendMessage() {
         const messageBox = chatContainer.querySelector(".send-message > input:nth-child(1)");
@@ -89,6 +100,40 @@ function getCurrentTimeAsString(){
 
         const allPlayersRef = firebase.database().ref(`players`);
         const allChatRef = firebase.database().ref('chatMessages').orderByChild('time');
+
+        async function openPlayerSettings() {
+            const settingsBox = document.querySelector(".player-settings-popup");
+            const autoButton = document.getElementById("generate-name");
+            const setNameButton = document.getElementById("set-name");
+        
+            settingsBox.classList.remove('hidden');
+            settingsBox.classList.remove('scaleInAnimation'); // reset animation
+            void settingsBox.offsetWidth; // trigger reflow
+            settingsBox.classList.add('scaleInAnimation'); // start animation
+        
+            autoButton.addEventListener("click", null);
+            setNameButton.addEventListener("click", setPlayerName);
+        
+            const playerNameRef = firebase.database().ref(`players/${playerId}`);
+            await playerNameRef.get().then((snapshot) => {
+                playerName = (snapshot.val().name);
+            })
+            
+            const playerNameInput = document.querySelector(".player-settings-name-input");
+            playerNameInput.value = playerName;
+        
+        }
+
+        async function setPlayerName() {
+            const playerNameInput = document.querySelector(".player-settings-name-input");
+            playerName = playerNameInput.value;
+            playerRef.update({
+                name: playerName
+            })
+            chatRef.get().then((snapshot) => {
+                drawMessages(snapshot.val());
+            })
+        }
 
         async function drawMessages(players) {
 
@@ -193,6 +238,9 @@ function getCurrentTimeAsString(){
             characterElement.style.transform = `translate3d(${left}, ${top}, 0)`;
             gameContainer.prepend(characterElement);
             playerNamesContainer.appendChild(playerListElement);
+
+            const playerInfoSettings = document.getElementsByClassName("playerInfo you");
+            playerInfoSettings[0].addEventListener("click", openPlayerSettings);
         })
 
         //Remove character from DOM when they leave
