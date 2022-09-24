@@ -99,7 +99,6 @@ function getCurrentTimeAsString(){
         new KeyPressListener("ArrowRight", () => handleArrowPress(2, 0));
 
         const allPlayersRef = firebase.database().ref(`players`);
-        const allChatRef = firebase.database().ref('chatMessages').orderByChild('time');
 
         async function openPlayerSettings() {
             const settingsBox = document.querySelector(".player-settings-popup");
@@ -111,7 +110,7 @@ function getCurrentTimeAsString(){
             void settingsBox.offsetWidth; // trigger reflow
             settingsBox.classList.add('scaleInAnimation'); // start animation
         
-            autoButton.addEventListener("click", null);
+            autoButton.addEventListener("click", getAutoName);
             setNameButton.addEventListener("click", setPlayerName);
         
             const playerNameRef = firebase.database().ref(`players/${playerId}`);
@@ -133,6 +132,10 @@ function getCurrentTimeAsString(){
             chatRef.get().then((snapshot) => {
                 drawMessages(snapshot.val());
             })
+        }
+
+        function getAutoName() {
+            document.querySelector(".player-settings-name-input").value = createName();
         }
 
         async function drawMessages(players) {
@@ -167,7 +170,7 @@ function getCurrentTimeAsString(){
             }
         }
 
-        allChatRef.on("value", (snapshot) => {
+        chatRef.on("value", (snapshot) => {
             //Fires when a chat is sent
             drawMessages(snapshot.val() || {});
         })
