@@ -35,7 +35,8 @@ function centerName(gamePlayerName) {
 }
 
 function getCurrentTimeAsString(){
-    return (new Date().toLocaleTimeString().replace(/(0[\d]+:[\d]{2})(:[\d]{2})(.*)/, "$1$3"));
+    // return (new Date().toLocaleTimeString().replace(/(0[\d]+:[\d]{2})(:[\d]{2})(.*)/, "$1$3"));
+    return String(new Date());
 }
 
 (function () {
@@ -83,10 +84,17 @@ function getCurrentTimeAsString(){
     function handleArrowPress(xChange, yChange) {
         const newX = players[playerId].x + xChange;
         const newY = players[playerId].y + yChange;
+
         if (!inBounds(newX, newY)) {
             //move to the next space
             players[playerId].x = newX;
             players[playerId].y = newY;
+            playerRef.set(players[playerId]);
+        } else if (newX < roadData.minX) {
+            players[playerId].x = roadData.minX;
+            playerRef.set(players[playerId]);
+        } else if (newX > roadData.maxX) {
+            players[playerId].x = roadData.maxX;
             playerRef.set(players[playerId]);
         }
     }
@@ -129,53 +137,58 @@ function getCurrentTimeAsString(){
             playerRef.update({
                 name: playerName
             })
-            chatRef.get().then((snapshot) => {
-                drawMessages(snapshot.val());
-            })
         }
 
         function getAutoName() {
             document.querySelector(".player-settings-name-input").value = createName();
         }
 
-        async function drawMessages(players) {
-
+        async function drawAllMessages(players) {
             //Removes all DOM elements in the chat so they aren't duplicated
             while (chatMessages.firstChild) {
                 chatMessages.removeChild(chatMessages.firstChild);
             }
-            const playerArray = Object.values(players)
-            for await (const sender of playerArray) {
-                    //Gets the name from the allPlayersRef, so the name can be added to the message
-                    await allPlayersRef.child(sender.id).get().then((snapshot) => { //Maybe put async here if they come out of order?
-
-                        //HTML setup and appending
-                        var playerName;
-                        if (snapshot.val()?.name){
-                            playerName = snapshot.val().name;
-                        } else{
-                            playerName = "User Disconnected";
-                        }
-                        const chatTimestamp = sender.time;
-                        const chatMessage = sender.message;
-                        const playerNameSpan = document.createElement('span');
-                        const messageSpan = document.createElement('span');
-                        messageSpan.classList.add("messageBody");
-                        messageSpan.innerHTML = chatMessage;
-                        playerNameSpan.innerHTML = `${playerName} (${chatTimestamp}):`;
-                        chatMessages.append(playerNameSpan);
-                        chatMessages.append(messageSpan);
-                        chatContainer.scrollTop = chatContainer.scrollHeight;
-                    })
+            if (players){
+                const playerArray = Object.values(players)
+                for await (const sender of playerArray) {
+                        //Gets the name from the allPlayersRef, so the name can be added to the message
+                        await allPlayersRef.child(sender.id).get().then(async(snapshot) => { //Maybe put async here if they come out of order?
+    
+                            //HTML setup and appending
+                            var playerName;
+                            if (snapshot.val()?.name){
+                                playerName = snapshot.val().name;
+                            } else{
+                                playerName = "User Disconnected";
+                            }
+                            const chatTimestamp = (new Date(sender.time).toLocaleTimeString().replace(/(0[\d]+:[\d]{2})(:[\d]{2})(.*)/, "$1$3"));
+                            const chatMessage = sender.message;
+                            const playerNameSpan = document.createElement('span');
+                            const messageSpan = document.createElement('span');
+                            messageSpan.classList.add("messageBody");
+                            messageSpan.innerHTML = chatMessage;
+                            playerNameSpan.innerHTML = `${playerName} (${chatTimestamp}):`;
+                            chatMessages.append(playerNameSpan);
+                            chatMessages.append(messageSpan);
+                            chatContainer.scrollTop = chatContainer.scrollHeight;
+                        })
+                }
             }
         }
 
         chatRef.on("value", (snapshot) => {
             //Fires when a chat is sent
-            drawMessages(snapshot.val() || {});
+            drawAllMessages(snapshot.val());
+        })
+
+        allPlayersRef.on("child_changed", (snapshot) => {
+            chatRef.get().then((snapshot) => {
+                drawAllMessages(snapshot.val());
+            })
         })
 
         allPlayersRef.on("value", (snapshot) =>{
+
             //Fires whenever a change occurs
             players = snapshot.val() || {};
             Object.keys(players).forEach((key) => {
