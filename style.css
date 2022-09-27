@@ -199,7 +199,6 @@ input[type=text]:focus {
     top: -15px;
     left: -100px;
     background: url(images/car.png);
-    filter: hue-rotate(60deg);
 }
 .Character_name-container {
     position: absolute;
@@ -235,7 +234,7 @@ input[type=text]:focus {
 .player-settings-popup {
     color: white;
     width: 200px;
-    height: 100px;
+    height: 150px;
     z-index: 2;
     background-color: black;
     border: 2px solid white;
@@ -271,6 +270,26 @@ input[type=text]:focus {
     display: block;
     float: right;
 }
+input[type=range] {
+    -webkit-appearance: none;
+    margin: 0;
+    display: block;
+    padding: 10px;
+    width: 100%;
+    background: white;
+  }
+input[type=range]::-moz-range-track {
+    background-image: linear-gradient(to left, red, violet, indigo, blue, green, yellow, orange, red);
+    border: none;
+    border-radius: 3px;
+}
+input[type=range]::-webkit-slider-runnable-track {
+    background-image: linear-gradient(to left, red, violet, indigo, blue, green, yellow, orange, red);
+    border: none;
+    border-radius: 3px;
+}
+
+
 .scaleInAnimation {
     animation: scaleIn .5s;
 }

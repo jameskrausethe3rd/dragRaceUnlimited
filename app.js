@@ -16,6 +16,10 @@ function createName() {
     return `${prefix} ${animal}`;
 }
 
+function randomCarColor() {
+    return Math.floor(Math.random() * 360);;
+}
+
 function inBounds(x, y){
     return (
     x > roadData.maxX || 
@@ -105,13 +109,27 @@ function getCurrentTimeAsString(){
         new KeyPressListener("ArrowDown", () => handleArrowPress(0, 2));
         new KeyPressListener("ArrowLeft", () => handleArrowPress(-2, 0));
         new KeyPressListener("ArrowRight", () => handleArrowPress(2, 0));
+        new KeyPressListener("Enter", () => handleEnterKey());
 
         const allPlayersRef = firebase.database().ref(`players`);
+
+        function handleEnterKey() {
+            const sendChatActive = document.querySelector('.send-message > input:nth-child(1)');
+            const updateNameActive = document.querySelector('.player-settings-name-input');
+
+            if (sendChatActive === document.activeElement) {
+                sendMessage();
+            } else if (updateNameActive === document.activeElement){
+                setPlayerName();
+            }
+        }
 
         async function openPlayerSettings() {
             const settingsBox = document.querySelector(".player-settings-popup");
             const autoButton = document.getElementById("generate-name");
             const setNameButton = document.getElementById("set-name");
+            const carColorSlider = document.getElementById("car_color_slider");
+            let carColorOffset;
         
             settingsBox.classList.remove('hidden');
             settingsBox.classList.remove('scaleInAnimation'); // reset animation
@@ -124,10 +142,13 @@ function getCurrentTimeAsString(){
             const playerNameRef = firebase.database().ref(`players/${playerId}`);
             await playerNameRef.get().then((snapshot) => {
                 playerName = (snapshot.val().name);
+                carColorOffset = (snapshot.val().car_color_offset);
             })
             
             const playerNameInput = document.querySelector(".player-settings-name-input");
             playerNameInput.value = playerName;
+
+            carColorSlider.value = carColorOffset;
         
         }
 
@@ -215,6 +236,7 @@ function getCurrentTimeAsString(){
                 el.style.transform = `translate3d(${left}, ${top}, 0)`;
             })
         })
+
         allPlayersRef.on("child_added", (snapshot) =>{
             //Fires whenever a new node is added to the tree
             const addedPlayer = snapshot.val();
@@ -224,7 +246,7 @@ function getCurrentTimeAsString(){
                 characterElement.classList.add("you");
             }
             characterElement.innerHTML = (`
-            <div class="Character_car grid-cell"></div>
+            <div class="Character_car grid-cell" style="filter: hue-rotate(${addedPlayer.car_color_offset}deg);"></div>
             <div class="Character_name-container">
                 <span class="Character_name"></span>
             </div>
@@ -255,6 +277,9 @@ function getCurrentTimeAsString(){
             gameContainer.prepend(characterElement);
             playerNamesContainer.appendChild(playerListElement);
 
+            const gamePlayerName = characterElement.querySelector(".Character_name-container")
+            gamePlayerName.style.left = centerName(gamePlayerName);
+
             const playerInfoSettings = document.getElementsByClassName("playerInfo you");
             playerInfoSettings[0].addEventListener("click", openPlayerSettings);
         })
@@ -265,6 +290,10 @@ function getCurrentTimeAsString(){
             gameContainer.removeChild(playerElements[removedKey].charElement);
             playerNamesContainer.removeChild(playerElements[removedKey].playerList);
             delete playerElements[removedKey];
+
+            chatRef.get().then((snapshot) => {
+                drawAllMessages(snapshot.val());
+            })
         })
     }
 
@@ -283,7 +312,8 @@ function getCurrentTimeAsString(){
                 name,
                 x: Math.floor(Math.random() * (19 - 5) + 5),
                 y: randomFromArray([9, 11, 13]),
-                online: true
+                online: true,
+                car_color_offset: randomCarColor()
             })
 
             //PRESENCE DETECTION
