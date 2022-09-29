@@ -39,7 +39,6 @@ function centerName(gamePlayerName) {
 }
 
 function getCurrentTimeAsString(){
-    // return (new Date().toLocaleTimeString().replace(/(0[\d]+:[\d]{2})(:[\d]{2})(.*)/, "$1$3"));
     return String(new Date());
 }
 
@@ -62,9 +61,8 @@ function getCurrentTimeAsString(){
 
     const gameContainer = document.querySelector(".game-container");
     const playerNamesContainer = document.querySelector(".playerNames-container");
-    const chatContainer = document.querySelector(".chat-container")
-    const chatMessages = document.querySelector(".chat-messages")
-
+    const chatContainer = document.querySelector(".chat-container");
+    const chatMessages = document.querySelector(".chat-messages");
 
     function closePlayerSettings() {
         const settingsBox = document.querySelector(".player-settings-popup");
@@ -149,7 +147,14 @@ function getCurrentTimeAsString(){
             playerNameInput.value = playerName;
 
             carColorSlider.value = carColorOffset;
-        
+
+            let colorRange = document.getElementById("car_color_slider");
+            colorRange.addEventListener("input", function() {
+            playerRef.update({
+                car_color_offset: colorRange.value
+            })
+            playerCar = document.querySelector("div.Character.grid-cell.you div.Character_car.grid-cell");
+            playerCar.style = `filter: hue-rotate(${colorRange.value}deg)`;}, false);
         }
 
         async function setPlayerName() {
@@ -234,6 +239,8 @@ function getCurrentTimeAsString(){
                 const left = 16 * characterState.x + "px";
                 const top = 16 * characterState.y - 4 + "px";
                 el.style.transform = `translate3d(${left}, ${top}, 0)`;
+
+                el.querySelector(".Character_car.grid-cell").style = `filter: hue-rotate(${characterState.car_color_offset}deg)`;
             })
         })
 
@@ -245,13 +252,7 @@ function getCurrentTimeAsString(){
             if(addedPlayer.id == playerId){
                 characterElement.classList.add("you");
             }
-            characterElement.innerHTML = (`
-            <div class="Character_car grid-cell" style="filter: hue-rotate(${addedPlayer.car_color_offset}deg);"></div>
-            <div class="Character_name-container">
-                <span class="Character_name"></span>
-            </div>
-            <div class="Character_you-arrow"></div>
-            `);
+            characterElement.innerHTML = (`<div class="Character_car grid-cell" style="filter: hue-rotate(${addedPlayer.car_color_offset}deg);"></div><div class="Character_name-container"><span class="Character_name"></span></div><div class="Character_you-arrow"></div>`);
 
             const playerListElement = document.createElement("div");
             playerListElement.classList.add("playerInfo");
@@ -284,7 +285,6 @@ function getCurrentTimeAsString(){
             playerInfoSettings[0].addEventListener("click", openPlayerSettings);
         })
 
-        //Remove character from DOM when they leave
         allPlayersRef.on("child_removed", (snapshot) => {
             const removedKey = snapshot.val().id;
             gameContainer.removeChild(playerElements[removedKey].charElement);

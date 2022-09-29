@@ -198,7 +198,7 @@ input[type=text]:focus {
     transform: scale(.5);
     top: -15px;
     left: -100px;
-    background: url(images/car.png);
+    background: url(images/car_red.png);
 }
 .Character_name-container {
     position: absolute;
@@ -279,7 +279,7 @@ input[type=range] {
     background: white;
   }
 input[type=range]::-moz-range-track {
-    background-image: linear-gradient(to left, red, violet, indigo, blue, green, yellow, orange, red);
+    background-image: linear-gradient(to left,red, violet, indigo, blue, green, yellow, orange, red);
     border: none;
     border-radius: 3px;
 }
@@ -288,7 +288,6 @@ input[type=range]::-webkit-slider-runnable-track {
     border: none;
     border-radius: 3px;
 }
-
 
 .scaleInAnimation {
     animation: scaleIn .5s;
