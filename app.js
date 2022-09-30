@@ -42,6 +42,23 @@ function getCurrentTimeAsString(){
     return String(new Date());
 }
 
+function logIn() {
+    const loginPopUp = document.querySelector(".login-popup");
+    const loginPopUpContainer = document.querySelector(".login-container")
+    loginPopUpContainer.classList.remove('hidden');
+    loginPopUp.classList.remove('scaleInAnimation'); // reset animation
+    void loginPopUp.offsetWidth; // trigger reflow
+    loginPopUp.classList.add('scaleInAnimation'); // start animation
+
+    let loginCloseButton = document.getElementById("login-close");
+    loginCloseButton.addEventListener("click", function() {closePlayerSettings(document.querySelector(".login-container"))});
+}
+
+function closePlayerSettings(container) {
+    container.children[0].classList.remove('scaleInAnimation');  
+    container.classList.add('hidden');
+}
+
 (function () {
 
     window.addEventListener("resize", setScale);
@@ -49,9 +66,6 @@ function getCurrentTimeAsString(){
 
     let sendMessageButton = document.querySelector(".send-message > input:nth-child(2)");
     sendMessageButton.addEventListener("click", sendMessage);
-
-    let playerSettingsCloseButton = document.querySelector(".player-settings-popup-x");
-    playerSettingsCloseButton.addEventListener("click", closePlayerSettings);
 
     let playerId;
     let playerRef;
@@ -63,12 +77,11 @@ function getCurrentTimeAsString(){
     const playerNamesContainer = document.querySelector(".playerNames-container");
     const chatContainer = document.querySelector(".chat-container");
     const chatMessages = document.querySelector(".chat-messages");
+    const loginButton = document.getElementById("log-in");
+    const signupButton = document.getElementById("sign-up");
 
-    function closePlayerSettings() {
-        const settingsBox = document.querySelector(".player-settings-popup");
-        settingsBox.classList.remove('scaleInAnimation');  
-        settingsBox.classList.add('hidden');
-    }
+    loginButton.addEventListener("click", logIn);
+    signupButton.addEventListener("click", function() {alert("test")})
 
     function sendMessage() {
         const messageBox = chatContainer.querySelector(".send-message > input:nth-child(1)");
@@ -124,12 +137,13 @@ function getCurrentTimeAsString(){
 
         async function openPlayerSettings() {
             const settingsBox = document.querySelector(".player-settings-popup");
+            const settingsBoxContainer = document.querySelector(".player-settings-container")
             const autoButton = document.getElementById("generate-name");
             const setNameButton = document.getElementById("set-name");
             const carColorSlider = document.getElementById("car_color_slider");
             let carColorOffset;
         
-            settingsBox.classList.remove('hidden');
+            settingsBoxContainer.classList.remove('hidden');
             settingsBox.classList.remove('scaleInAnimation'); // reset animation
             void settingsBox.offsetWidth; // trigger reflow
             settingsBox.classList.add('scaleInAnimation'); // start animation
@@ -155,6 +169,9 @@ function getCurrentTimeAsString(){
             })
             playerCar = document.querySelector("div.Character.grid-cell.you div.Character_car.grid-cell");
             playerCar.style = `filter: hue-rotate(${colorRange.value}deg)`;}, false);
+
+            let playerSettingsCloseButton = document.getElementById("settings-close");
+            playerSettingsCloseButton.addEventListener("click", function() {closePlayerSettings(document.querySelector(".player-settings-container"))});
         }
 
         async function setPlayerName() {
@@ -298,7 +315,6 @@ function getCurrentTimeAsString(){
     }
 
     firebase.auth().onAuthStateChanged((user) => {
-        //console.log(user)
         if (user) {
             //You're logged in!
             playerId = user.uid;

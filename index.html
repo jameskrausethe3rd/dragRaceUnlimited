@@ -8,6 +8,10 @@
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
+        <div class="topnav">
+            <a href="#" id="sign-up">Sign Up</a>
+            <a href="#" id="log-in">Log In</a>
+        </div> 
         <div class="game-container-border">
             <div class="chat-container">
                 <div class="chat-title">
@@ -27,15 +31,25 @@
                 <div class="game-container-road-background"></div>
                 <div class="game-container-road"></div>
             </div>
-            <div class="player-settings-container">
-                <div class="player-settings-popup hidden">
+            <div class="player-settings-container hidden">
+                <div class="player-settings-popup">
                     <span class="player-settings-popup-title">Settings</span>
-                    <span class="player-settings-popup-x">X</span>
+                    <span id="settings-close" class="player-settings-popup-x">X</span>
                     <span class="player-settings-content">Name:</span>
                     <input class="player-settings-name-input" type="text" value="name">
                     <input class="player-settings-name-buttons" id="set-name" type="button" value="SET NAME">
                     <input class="player-settings-name-buttons" id="generate-name" type="button" value="AUTO">
                     <input id="car_color_slider" type="range" min="0" max="359">
+                </div>
+            </div>
+            <div class="login-container hidden">
+                <div class="login-popup">
+                    <span class="player-settings-popup-title">Log In</span>
+                    <span id="login-close" class="player-settings-popup-x">X</span>
+                    <span class="player-settings-content">Email:</span>
+                    <input class="player-settings-name-input" type="text" value="">
+                    <span class="player-settings-content">Password:</span>
+                    <input class="player-settings-name-input" type="text" value="">
                 </div>
             </div>
         </div>

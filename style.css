@@ -204,7 +204,7 @@ input[type=text]:focus {
     position: absolute;
     top: -12px;
     font-size: 6px;
-    padding: 1px 2px 2px;
+    padding: 2px;
     border-radius: 3px;
     background: #333;
     color: white;
@@ -227,8 +227,6 @@ input[type=text]:focus {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 200px;
-    height: 100px;
     z-index: 2;
 }
 .player-settings-popup {
@@ -287,6 +285,59 @@ input[type=range]::-webkit-slider-runnable-track {
     background-image: linear-gradient(to left, red, violet, indigo, blue, green, yellow, orange, red);
     border: none;
     border-radius: 3px;
+}
+
+
+/* Add a black background color to the top navigation */
+.topnav {
+    position: absolute !important;
+    top: 0%;
+    left: 0%;
+    width: 100%;
+    background-color: black;
+}
+  
+  /* Style the links inside the navigation bar */
+.topnav a {
+    color: #f2f2f2;
+    text-align: center;
+    text-decoration: none;
+    padding: 15px;
+    font-size: 17px;
+    font-family: pixelatedText;
+    float: right;
+    border: 2px white solid;
+ }
+  
+ /* Change the color of links on hover */
+ .topnav a:hover {
+    background-color: #ddd;
+    color: black;
+ }
+  
+ /* Add a color to the active/current link */
+ .topnav a.active {
+    background-color: #04AA6D;
+    color: white;
+ }
+
+ .login-container {
+    font-family: pixelatedText;
+    position: absolute;
+    padding: 0;
+    margin: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+}
+.login-popup {
+    color: white;
+    width: 200px;
+    height: 150px;
+    z-index: 2;
+    background-color: black;
+    border: 2px solid white;
 }
 
 .scaleInAnimation {
